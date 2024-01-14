@@ -82,3 +82,17 @@
     line: "lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}"
     insertafter: '^lxc.idmap: g.*\nlxc.idmap: g.*\n'
   notify: Restart lxc
+
+- name: Add line to subuid file
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    line: "root:{{ lxc_mount_user_uid }}:1"
+    regexp: '^root:{{ lxc_mount_user_uid }}'
+  notify: Restart lxc
+
+- name: Add line to subgid file
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    line: "root:{{ lxc_mount_user_gid }}:1"
+    regexp: '^root:{{ lxc_mount_user_gid }}'
+  notify: Restart lxc
