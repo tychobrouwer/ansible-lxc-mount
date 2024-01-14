@@ -8,17 +8,17 @@ The role should be run on the host and on the LXC containers with the ```role_is
 Role Variables
 --------------
 
-The ```role_is_lxc``` should be set to true if the role is being run on an LXC container and should be false when run on the (Proxmox) host.
+The ```lxc_mount_is_lxc``` should be set to true if the role is being run on an LXC container and should be false when run on the (Proxmox) host.
 
-The ```role_mounted_folders``` should be set to a list of dictionaries containing the ```src``` (mount point on the host) and the ```dest``` (mount point on the container).
+The ```lxc_mount_mounts``` should be set to a list of dictionaries containing the ```src``` (mount point on the host) and the ```dest``` (mount point on the container).
 
-```role_container_id``` should be set to the ID of the container which the mount should be mounted on.
+```lxc_mount_lxc_id``` should be set to the ID of the container which the mount should be mounted on.
 
-The ```role_mountuser_users``` list should contain the users that should be be added to the mount group (and thus have permissions to access the mount).
+The ```lxc_mount_users``` list should contain the users that should be be added to the mount group (and thus have permissions to access the mount).
 
-```role_mountuser_uid``` and ```role_mountuser_gid``` can be set to the UID and GID of the user that should own the mount points.
+```lxc_mount_user_uid``` and ```lxc_mount_user_gid``` can be set to the UID and GID of the user that should own the mount points.
 
-```role_mountuser_name``` and ```role_mountuser_group``` can be set to the name of the user and group that should own the mount points.
+```lxc_mount_user_name``` and ```lxc_mount_user_group``` can be set to the name of the user and group that should own the mount points.
 
 Example Playbook
 ----------------
@@ -32,7 +32,7 @@ Example Playbook
         lxc_mount_users: [ "backup" ]
 
       roles:
-         - { role: lxc_mount, lxc_mount_is_lxc: false, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_moun_lxc_id: 104 }
+         - { role: lxc_mount, lxc_mount_is_lxc: false, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
 
     - hosts: lxc
       vars:
@@ -42,7 +42,7 @@ Example Playbook
         lxc_mount_users: [ "sambauser" ]
 
       roles:
-         - { role: lxc_mount, lxc_mount_is_lxc: true, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_moun_lxc_id: 104 }
+         - { role: lxc_mount, lxc_mount_is_lxc: true, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
 ```
 
 License
