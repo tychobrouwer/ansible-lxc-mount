@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+
+  roles:
+    - role: ansible-lxc-mount
+      lxc_mount_is_lxc: false
+      lxc_mount_mounts:
+        - { src: /media/file-share, dest: /share/file-share }
+        - { src: /rpool-main/media-share, dest: /share/media-share }
+      lxc_mount_lxc_id: 101
+      lxc_mount_test_mode: true

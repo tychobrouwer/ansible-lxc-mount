@@ -1,0 +1,84 @@
+---
+- name: Ensure mounted folder exists
+  ansible.builtin.file:
+    path: "{{ item.src }}"
+    state: directory
+    recurse: true
+    mode: "0775"
+    owner: "{{ lxc_mount_user_name }}"
+    group: "{{ lxc_mount_user_group }}"
+  with_items: "{{ lxc_mount_mounts }}"
+
+- name: Create lxc config folder
+  ansible.builtin.file:
+    path: /etc/pve/lxc
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure lxc config exists
+  ansible.builtin.file:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Add mounts to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "mp{{ idx }}: {{ item.src }},mp={{ item.dest }}"
+    regexp: '^mp{{ idx }}: '
+  loop: "{{ lxc_mount_mounts }}"
+  loop_control:
+    index_var: idx
+  notify: Restart lxc
+
+- name: Add first line uid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: u 0 100000 {{ lxc_mount_user_uid }}"
+    regexp: '^lxc.idmap: u 0 100000 '
+    insertbefore: '^lxc.idmap: u.*\nlxc.idmap: u.*'
+  notify: Restart lxc
+
+- name: Add second line uid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: u {{ lxc_mount_user_uid }} {{ lxc_mount_user_uid }} 1"
+    insertafter: '^lxc.idmap: u 0 100000.*\n'
+    firstmatch: true
+  notify: Restart lxc
+
+- name: Add third line uid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: u {{ lxc_mount_user_uid + 1 }} {{ lxc_mount_user_uid + 100001 }} {{ 165536 - lxc_mount_user_uid - 100001 }}"
+    insertafter: '^lxc.idmap: u.*\nlxc.idmap: u.*\n'
+  notify: Restart lxc
+
+- name: Add first line gid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: g 0 100000 {{ lxc_mount_user_gid }}"
+    regexp: '^lxc.idmap: g 0 100000 '
+    insertbefore: '^lxc.idmap: g.*\nlxc.idmap: g.*'
+  notify: Restart lxc
+
+- name: Add second line gid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: g {{ lxc_mount_user_gid }} {{ lxc_mount_user_gid }} 1"
+    insertafter: '^lxc.idmap: g 0 100000.*\n'
+    firstmatch: true
+  notify: Restart lxc
+
+- name: Add third line gid idmap to lxc config
+  ansible.builtin.lineinfile:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    line: "lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}"
+    insertafter: '^lxc.idmap: g.*\nlxc.idmap: g.*\n'
+  notify: Restart lxc

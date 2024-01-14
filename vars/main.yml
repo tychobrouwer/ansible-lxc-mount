@@ -1,0 +1,7 @@
+---
+# vars file for lxc_mount
+lxc_mount_user_uid: 3500
+lxc_mount_user_gid: 3500
+lxc_mount_user_name: mountuser
+lxc_mount_user_group: mountuser
+lxc_mount_users: []
