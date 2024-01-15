@@ -32,7 +32,7 @@ Example Playbook
         lxc_mount_users: [backup]
 
       roles:
-         - { role: lxc_mount, lxc_mount_is_lxc: false, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
+         - { role: tychobrouwer.lxc_mount, lxc_mount_is_lxc: false, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
 
     - hosts: lxc
       vars:
@@ -42,7 +42,7 @@ Example Playbook
         lxc_mount_users: [sambauser]
 
       roles:
-         - { role: lxc_mount, lxc_mount_is_lxc: true, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
+         - { role: tychobrouwer.lxc_mount, lxc_mount_is_lxc: true, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
 ```
 
 License
