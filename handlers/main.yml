@@ -3,4 +3,4 @@
 - name: Restart lxc
   ansible.builtin.command: pct reboot {{ lxc_mount_lxc_id }}
   changed_when: true
-  when: lxc_mount_test_mode is not defined or lxc_mount_test_mode == false
+  when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
