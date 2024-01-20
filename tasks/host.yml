@@ -35,6 +35,7 @@
       {% endfor %}
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
+  notify: Restart lxc
 
 - name: Add idmap to lxc config
   ansible.builtin.blockinfile:
@@ -47,6 +48,7 @@
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
+  notify: Restart lxc
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
