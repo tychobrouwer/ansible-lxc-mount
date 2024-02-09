@@ -69,11 +69,11 @@
 
 - name: Set content
   ansible.builtin.copy:
-    content: "{{ lxc_config_content.content | b64decode | regex_replace('^#', '') }}"
+    content: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     remote_src: true
     owner: root
-    group: www-data
+    group: root
     mode: "0644"
   notify:
     - Restart lxc
