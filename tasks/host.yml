@@ -10,7 +10,7 @@
   with_items: "{{ lxc_mount_mounts }}"
 
 - name: Update lxc config
-  include_tasks: update-conf.yml
+  ansible.builtin.include_tasks: update-conf.yml
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:

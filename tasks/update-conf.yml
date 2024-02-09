@@ -60,7 +60,7 @@
 - name: Remove new lines and comments
   ansible.builtin.replace:
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    regexp: "{{ item}}"
+    regexp: "{{ item }}"
     replace: ""
   with_items:
     - "^#.*\n"
@@ -69,7 +69,7 @@
 
 - name: Get new lxc config
   ansible.builtin.stat:
-    path: /root/lxc_configs/{{ lxc_nvidia_lxc_id }}.conf
+    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
   register: new_lxc_config
 
 - name: Copy config
