@@ -20,7 +20,7 @@
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
-    insertafter: "^unprivileged:"
+    insertafter: "EOF"
   notify: Restart lxc
 
 - name: Add mounts to lxc config
@@ -31,7 +31,7 @@
       {% endfor %}
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
-    insertafter: "^unprivileged:"
+    insertafter: "EOF"
   notify: Restart lxc
 
 - name: Add line to subuid file
