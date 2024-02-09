@@ -25,7 +25,7 @@
     owner: root
     group: root
     mode: "0644"
-    changed_when: false
+  changed_when: false
 
 - name: Remove old configurations
   ansible.builtin.replace:
