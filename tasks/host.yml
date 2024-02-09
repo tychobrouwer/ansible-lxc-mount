@@ -9,16 +9,6 @@
     group: "{{ lxc_mount_user_group }}"
   with_items: "{{ lxc_mount_mounts }}"
 
-- name: Ensure lxc config exists
-  ansible.builtin.file:
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    state: touch
-    modification_time: preserve
-    access_time: preserve
-    owner: root
-    group: root
-    mode: "0644"
-
 - name: Add mounts to lxc config
   ansible.builtin.blockinfile:
     block: |
