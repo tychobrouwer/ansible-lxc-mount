@@ -30,7 +30,7 @@
 - name: Remove old configurations
   ansible.builtin.replace:
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    regexp: "{{ item}}"
+    regexp: "{{ item }}"
     replace: ""
   with_items:
     - "^mp[0-9]+:.*"
@@ -64,13 +64,12 @@
 
 - name: Set content
   ansible.builtin.copy:
-    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    content: "{{ lookup('file', '/root/lxc_configs/{{ lxc_mount_lxc_id }}.conf') | regex_replace('^#', '')}}"
     dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     remote_src: true
     owner: root
     group: www-data
     mode: "0644"
-  when: lxc_mount_config.changed or lxc_guid_config.changed
   notify:
     - Restart lxc
     - Start lxc
