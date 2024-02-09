@@ -80,11 +80,18 @@
     dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     remote_src: true
     owner: root
-    group: www-data
-    mode: "0640"
+    group: root
+    mode: "0664"
   notify:
     - Restart lxc
     - Start lxc
+
+- name: Set permissions
+  ansible.builtin.file:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    owner: root
+    group: www-data
+    mode: "0640"
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
