@@ -9,69 +9,8 @@
     group: "{{ lxc_mount_user_group }}"
   with_items: "{{ lxc_mount_mounts }}"
 
-- name: Ensure source lxc folder exists
-  ansible.builtin.file:
-    path: ~/lxc_configs
-    state: directory
-    mode: "0755"
-    owner: root
-    group: root
-
-- name: Create temp copy of lxc config
-  ansible.builtin.copy:
-    src: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    dest: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    remote_src: true
-    owner: root
-    group: root
-    mode: "0644"
-  changed_when: false
-
-- name: Remove old configurations
-  ansible.builtin.replace:
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    regexp: "{{ item }}"
-    replace: ""
-  with_items:
-    - "^mp[0-9]+:.*"
-    - "^lxc.idmap:.*"
-  changed_when: false
-
-- name: Add mounts to lxc config
-  ansible.builtin.blockinfile:
-    block: |
-      {% for mount in lxc_mount_mounts %}
-      mp{{ loop.index - 1 }}: {{ mount.src }},mp={{ mount.dest }}
-      {% endfor %}
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
-    insertafter: "^memory"
-  changed_when: false
-
-- name: Add idmap to lxc config
-  ansible.builtin.blockinfile:
-    block: |
-      lxc.idmap: u 0 100000 {{ lxc_mount_user_uid }}
-      lxc.idmap: u {{ lxc_mount_user_uid }} {{ lxc_mount_user_uid }} 1
-      lxc.idmap: u {{ lxc_mount_user_uid + 1 }} {{ lxc_mount_user_uid + 100001 }} {{ 165536 - lxc_mount_user_uid - 100001 }}
-      lxc.idmap: g 0 100000 {{ lxc_mount_user_gid }}
-      lxc.idmap: g {{ lxc_mount_user_gid }} {{ lxc_mount_user_gid }} 1
-      lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
-    insertafter: "^unprivileged: 1"
-  changed_when: false
-
-- name: Remove comments
-  ansible.builtin.replace:
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    regexp: "#.*\n"
-    replace: ""
-  changed_when: false
-
-- name: Copy config
-  ansible.builtin.command: cp /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-  changed_when: false
+- name: Update lxc config
+  include_tasks: update-conf.yml
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
