@@ -27,15 +27,30 @@
     group: root
     mode: "0644"
 
+- name: Ensure source lxc folder exists
+  ansible.builtin.file:
+    path: ~/lxc_configs
+    state: directory
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Create source lxc config
+  ansible.builtin.copy:
+    src: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    dest: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    force: false
+    remote_src: true
+
 - name: Add mounts to lxc config
   ansible.builtin.blockinfile:
     block: |
       {% for mount in lxc_mount_mounts %}
       mp{{ loop.index - 1 }}: {{ mount.src }},mp={{ mount.dest }}
       {% endfor %}
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
-  notify: Restart lxc
+  notify: Copy config
 
 - name: Add idmap to lxc config
   ansible.builtin.blockinfile:
@@ -46,9 +61,9 @@
       lxc.idmap: g 0 100000 {{ lxc_mount_user_gid }}
       lxc.idmap: g {{ lxc_mount_user_gid }} {{ lxc_mount_user_gid }} 1
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
-  notify: Restart lxc
+  notify: Copy config
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
