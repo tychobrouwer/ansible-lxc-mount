@@ -67,17 +67,11 @@
     src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
   register: lxc_config_content
 
-- name: Set content
-  ansible.builtin.copy:
-    content: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    remote_src: true
-    owner: root
-    group: root
-    mode: "0644"
-  notify:
-    - Restart lxc
-    - Start lxc
+- name: Remove comments
+  ansible.builtin.replace:
+    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    regexp: "#.*"
+    replace: ""
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
