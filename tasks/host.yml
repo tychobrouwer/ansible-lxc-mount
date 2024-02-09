@@ -50,7 +50,7 @@
       {% endfor %}
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
-    insertafter: "EOF"
+    insertafter: "^memory"
   notify: Copy config
 
 - name: Add idmap to lxc config
@@ -64,7 +64,7 @@
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
-    insertafter: "EOF"
+    insertafter: "^unprivileged: 1"
   notify: Copy config
 
 - name: Add line to subuid file
