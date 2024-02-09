@@ -14,7 +14,7 @@
     path: /etc/pve/lxc
     state: directory
     owner: root
-    group: root
+    group: www-data
     mode: "0755"
 
 - name: Ensure lxc config exists
@@ -24,7 +24,7 @@
     modification_time: preserve
     access_time: preserve
     owner: root
-    group: root
+    group: www-data
     mode: "0644"
 
 - name: Ensure source lxc folder exists

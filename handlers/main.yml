@@ -26,7 +26,7 @@
         dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
         remote_src: true
         owner: root
-        group: root
+        group: www-data
         mode: "0644"
       notify:
         - Restart lxc
