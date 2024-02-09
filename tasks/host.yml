@@ -62,9 +62,14 @@
     insertafter: "^unprivileged: 1"
   changed_when: false
 
+- name: Get config content
+  ansible.builtin.slurp:
+    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+  register: lxc_config_content
+
 - name: Set content
   ansible.builtin.copy:
-    content: "{{ lookup('file', '/root/lxc_configs/{{ lxc_mount_lxc_id }}.conf') | regex_replace('^#', '')}}"
+    content: "{{ lxc_config_content.content | b64decode | regex_replace('^#', '') }}"
     dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     remote_src: true
     owner: root
