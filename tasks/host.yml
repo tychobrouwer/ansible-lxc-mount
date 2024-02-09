@@ -73,6 +73,7 @@
   ansible.builtin.copy:
     src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    remote_src: true
     owner: root
     group: www-data
     mode: "0640"
