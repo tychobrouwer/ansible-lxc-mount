@@ -5,6 +5,7 @@
     name: "{{ lxc_mount_user_group }}"
     gid: "{{ lxc_mount_user_gid }}"
     state: present
+  when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Ensure mount user exists
   ansible.builtin.user:
@@ -14,12 +15,14 @@
     create_home: false
     shell: /usr/sbin/nologin
     state: present
+  when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Ensure root is in mount group
   ansible.builtin.user:
     name: root
     groups: "{{ lxc_mount_user_group }}"
     state: present
+  when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Add existing users to mount group
   ansible.builtin.user:
@@ -27,6 +30,7 @@
     groups: "{{ lxc_mount_user_group }}"
     append: true
   loop: "{{ lxc_mount_users }}"
+  when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Run lxc specific tasks
   ansible.builtin.include_tasks: lxc.yml

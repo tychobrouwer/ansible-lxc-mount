@@ -5,3 +5,4 @@ lxc_mount_user_gid: 3500
 lxc_mount_user_name: mountuser
 lxc_mount_user_group: mountuser
 lxc_mount_users: []
+lxc_mount_permissions: 0775

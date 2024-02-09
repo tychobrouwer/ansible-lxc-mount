@@ -56,6 +56,7 @@
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
     insertafter: "^unprivileged: 1"
   changed_when: false
+  when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Remove new lines and comments
   ansible.builtin.replace:

@@ -4,7 +4,7 @@
     path: "{{ item.dest }}"
     state: directory
     recurse: true
-    mode: "0775"
+    mode: "{{ lxc_mount_permissions }}"
     owner: "{{ lxc_mount_user_name }}"
     group: "{{ lxc_mount_user_group }}"
   with_items: "{{ lxc_mount_mounts }}"
