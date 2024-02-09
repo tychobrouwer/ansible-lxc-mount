@@ -69,6 +69,11 @@
     replace: ""
   changed_when: false
 
+- name: Remove old lxc config
+  ansible.builtin.file:
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    state: absent
+
 - name: Set new lxc config
   ansible.builtin.copy:
     src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
