@@ -1,34 +1,11 @@
 ---
 # handlers file for lxc_mount
-- name: Apply lxc config
-  block:
-    - name: Restart lxc
-      ansible.builtin.command: pct reboot {{ lxc_mount_lxc_id }}
-      changed_when: true
-      when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
-
-  rescue:
-    - name: Start lxc
-      ansible.builtin.command: pct start {{ lxc_mount_lxc_id }}
-      changed_when: true
-      when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
-
-- name: Copy config
-  block:
-    - name: Get config
-      ansible.builtin.slurp:
-        src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-      register: lxc_mount_config
-      notify: Set content
-
-    - name: Set content
-      ansible.builtin.copy:
-        content: "{{ lxc_mount_config.content | b64decode | regex_replace('^#.*', '') }}"
-        dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-        remote_src: true
-        owner: root
-        group: www-data
-        mode: "0644"
-      notify:
-        - Restart lxc
-      when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
+- name: Restart lxc
+  ansible.builtin.command: pct reboot {{ lxc_mount_lxc_id }}
+  changed_when: true
+  when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
+  register: lxc_reboot
+  
+- name: Start lxc
+  ansible.builtin.command: pct start {{ lxc_mount_lxc_id }}
+  when: lxc_reboot.stdout.find('not running') == -1

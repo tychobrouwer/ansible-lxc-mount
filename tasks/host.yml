@@ -36,7 +36,7 @@
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
     insertafter: "^memory"
-  notify: Copy config
+  register: lxc_mount_config
 
 - name: Add idmap to lxc config
   ansible.builtin.blockinfile:
@@ -50,18 +50,41 @@
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
     insertafter: "^unprivileged: 1"
-  notify: Copy config
+  register: lxc_guid_config
+
+- name: Get config
+  ansible.builtin.slurp:
+    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+  register: lxc_mount_config
+  when: lxc_mount_config.changed or lxc_guid_config.changed
+
+- name: Set content
+  ansible.builtin.copy:
+    content: "{{ lxc_mount_config.content | b64decode | regex_replace('^#.*', '') }}"
+    dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    remote_src: true
+    owner: root
+    group: www-data
+    mode: "0644"
+  when: lxc_mount_config.changed or lxc_guid_config.changed
+  notify:
+    - Restart lxc
+    - Start lxc
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
     path: /etc/subuid
     line: root:{{ lxc_mount_user_uid }}:1
     regexp: ^root:{{ lxc_mount_user_uid }}
-  notify: Apply lxc config
+  notify:
+    - Restart lxc
+    - Start lxc
 
 - name: Add line to subgid file
   ansible.builtin.lineinfile:
     path: /etc/subgid
     line: root:{{ lxc_mount_user_gid }}:1
     regexp: ^root:{{ lxc_mount_user_gid }}
-  notify: Apply lxc config
+  notify:
+    - Restart lxc
+    - Start lxc
