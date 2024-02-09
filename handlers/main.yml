@@ -14,19 +14,21 @@
       when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
 
 - name: Copy config
-  ansible.builtin.slurp:
-    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-  register: lxc_mount_config
-  notify: Set content
+  block:
+    - name: Get config
+      ansible.builtin.slurp:
+        src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+      register: lxc_mount_config
+      notify: Set content
 
-- name: Set content
-  ansible.builtin.copy:
-    content: "{{ lxc_mount_config.content | b64decode | regex_replace('^#.*', '') }}"
-    dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    remote_src: true
-    owner: root
-    group: www-data
-    mode: "0644"
-  notify:
-    - Restart lxc
-  when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
+    - name: Set content
+      ansible.builtin.copy:
+        content: "{{ lxc_mount_config.content | b64decode | regex_replace('^#.*', '') }}"
+        dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+        remote_src: true
+        owner: root
+        group: www-data
+        mode: "0644"
+      notify:
+        - Restart lxc
+      when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
