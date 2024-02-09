@@ -9,24 +9,6 @@
     group: "{{ lxc_mount_user_group }}"
   with_items: "{{ lxc_mount_mounts }}"
 
-- name: Create lxc config folder
-  ansible.builtin.file:
-    path: /etc/pve/lxc
-    state: directory
-    owner: root
-    group: www-data
-    mode: "0755"
-
-- name: Ensure lxc config exists
-  ansible.builtin.file:
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    state: touch
-    modification_time: preserve
-    access_time: preserve
-    owner: root
-    group: www-data
-    mode: "0644"
-
 - name: Ensure source lxc folder exists
   ansible.builtin.file:
     path: ~/lxc_configs
