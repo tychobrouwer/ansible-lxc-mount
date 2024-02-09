@@ -69,29 +69,9 @@
     replace: ""
   changed_when: false
 
-- name: Remove old lxc config
-  ansible.builtin.file:
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    state: absent
-
-- name: Set new lxc config
-  ansible.builtin.copy:
-    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    remote_src: true
-    owner: root
-    group: root
-    mode: "0664"
-  notify:
-    - Restart lxc
-    - Start lxc
-
-- name: Set permissions
-  ansible.builtin.file:
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    owner: root
-    group: www-data
-    mode: "0640"
+- name: Copy config
+  ansible.builtin.command: cp /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+  changed_when: false
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
