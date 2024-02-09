@@ -9,16 +9,6 @@
     group: "{{ lxc_mount_user_group }}"
   with_items: "{{ lxc_mount_mounts }}"
 
-- name: Add mounts to lxc config
-  ansible.builtin.blockinfile:
-    block: |
-      {% for mount in lxc_mount_mounts %}
-      mp{{ loop.index - 1 }}: {{ mount.src }},mp={{ mount.dest }}
-      {% endfor %}
-    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
-  notify: Restart lxc
-
 - name: Add idmap to lxc config
   ansible.builtin.blockinfile:
     block: |
@@ -30,6 +20,18 @@
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
+    insertafter: "^unprivileged:"
+  notify: Restart lxc
+
+- name: Add mounts to lxc config
+  ansible.builtin.blockinfile:
+    block: |
+      {% for mount in lxc_mount_mounts %}
+      mp{{ loop.index - 1 }}: {{ mount.src }},mp={{ mount.dest }}
+      {% endfor %}
+    path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
+    insertafter: "^unprivileged:"
   notify: Restart lxc
 
 - name: Add line to subuid file
