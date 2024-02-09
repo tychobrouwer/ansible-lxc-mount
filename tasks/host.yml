@@ -41,6 +41,9 @@
     dest: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     force: false
     remote_src: true
+    owner: root
+    group: root
+    mode: "0644"
 
 - name: Add mounts to lxc config
   ansible.builtin.blockinfile:
