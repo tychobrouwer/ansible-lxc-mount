@@ -50,6 +50,7 @@
       {% endfor %}
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
+    insertafter: "EOF"
   notify: Copy config
 
 - name: Add idmap to lxc config
@@ -63,6 +64,7 @@
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
+    insertafter: "EOF"
   notify: Copy config
 
 - name: Add line to subuid file
@@ -70,11 +72,11 @@
     path: /etc/subuid
     line: root:{{ lxc_mount_user_uid }}:1
     regexp: ^root:{{ lxc_mount_user_uid }}
-  notify: Restart lxc
+  notify: Apply lxc config
 
 - name: Add line to subgid file
   ansible.builtin.lineinfile:
     path: /etc/subgid
     line: root:{{ lxc_mount_user_gid }}:1
     regexp: ^root:{{ lxc_mount_user_gid }}
-  notify: Restart lxc
+  notify: Apply lxc config
