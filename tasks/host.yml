@@ -62,16 +62,23 @@
     insertafter: "^unprivileged: 1"
   changed_when: false
 
-- name: Get config content
-  ansible.builtin.slurp:
-    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-  register: lxc_config_content
-
 - name: Remove comments
   ansible.builtin.replace:
     path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
-    regexp: "#.*"
+    regexp: "#.*\n"
     replace: ""
+  changed_when: false
+
+- name: Set new lxc config
+  ansible.builtin.copy:
+    src: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    dest: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+    owner: root
+    group: www-data
+    mode: "0640"
+  notify:
+    - Restart lxc
+    - Start lxc
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
