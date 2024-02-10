@@ -3,7 +3,6 @@
   ansible.builtin.file:
     path: "{{ item.src }}"
     state: directory
-    recurse: true
     mode: "{{ lxc_mount_permissions }}"
     owner: "{{ lxc_mount_user_name }}"
     group: "{{ lxc_mount_user_group }}"
@@ -14,7 +13,6 @@
   ansible.builtin.file:
     path: "{{ item.src }}"
     state: directory
-    recurse: true
     mode: "{{ lxc_mount_permissions }}"
     owner: "{{ lxc_mount_user_uid }}"
     group: "{{ lxc_mount_user_gid }}"
