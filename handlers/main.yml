@@ -5,8 +5,9 @@
   changed_when: true
   when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
   register: lxc_reboot
+  failed_when: false
 
 - name: Start lxc
   ansible.builtin.command: pct start {{ lxc_mount_lxc_id }}
-  when: lxc_reboot.stdout.find('not running') == -1
+  when: lxc_reboot.stdout.find('not running') != -1
   changed_when: false
