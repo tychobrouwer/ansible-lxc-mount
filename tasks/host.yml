@@ -27,9 +27,7 @@
     path: /etc/subuid
     line: root:{{ lxc_mount_user_uid }}:1
     regexp: ^root:{{ lxc_mount_user_uid }}
-  notify:
-    - Restart lxc
-    - Start lxc
+  notify: Restart lxc
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Add line to subgid file
@@ -37,7 +35,5 @@
     path: /etc/subgid
     line: root:{{ lxc_mount_user_gid }}:1
     regexp: ^root:{{ lxc_mount_user_gid }}
-  notify:
-    - Restart lxc
-    - Start lxc
+  notify: Restart lxc
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
