@@ -9,16 +9,6 @@
   with_items: "{{ lxc_mount_mounts }}"
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
-- name: Ensure mounted folder exists
-  ansible.builtin.file:
-    path: "{{ item.src }}"
-    state: directory
-    mode: "{{ lxc_mount_permissions }}"
-    owner: "{{ lxc_mount_user_uid }}"
-    group: "{{ lxc_mount_user_gid }}"
-  with_items: "{{ lxc_mount_mounts }}"
-  when: "lxc_mount_user_name == 'root' or lxc_mount_user_group == 'root'"
-
 - name: Update lxc config
   ansible.builtin.include_tasks: update-conf.yml
 
