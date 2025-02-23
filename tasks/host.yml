@@ -6,24 +6,24 @@
     mode: "{{ lxc_mount_permissions }}"
     owner: "{{ lxc_mount_user_name }}"
     group: "{{ lxc_mount_user_group }}"
-  with_items: "{{ lxc_mount_mounts }}"
+  loop: "{{ lxc_mount_mounts }}"
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
-- name: Update lxc config
+- name: Update LXC configuration
   ansible.builtin.include_tasks: update-conf.yml
 
 - name: Add line to subuid file
   ansible.builtin.lineinfile:
     path: /etc/subuid
-    line: root:{{ lxc_mount_user_uid }}:1
-    regexp: ^root:{{ lxc_mount_user_uid }}
-  notify: Restart lxc
+    line: "root:{{ lxc_mount_user_uid }}:1"
+    regexp: "^root:{{ lxc_mount_user_uid }}"
+  notify: Restart LXC
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"
 
 - name: Add line to subgid file
   ansible.builtin.lineinfile:
     path: /etc/subgid
-    line: root:{{ lxc_mount_user_gid }}:1
-    regexp: ^root:{{ lxc_mount_user_gid }}
-  notify: Restart lxc
+    line: "root:{{ lxc_mount_user_gid }}:1"
+    regexp: "^root:{{ lxc_mount_user_gid }}"
+  notify: Restart LXC
   when: "lxc_mount_user_name != 'root' or lxc_mount_user_group != 'root'"

@@ -1,8 +1,6 @@
 ---
 # handlers file for lxc_mount
-- name: Restart lxc
+- name: Restart LXC
   ansible.builtin.command: pct reboot {{ lxc_mount_lxc_id }}
   changed_when: true
-  when: lxc_mount_test_mode is not defined or not lxc_mount_test_mode
-  register: lxc_reboot
   failed_when: false

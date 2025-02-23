@@ -1,5 +1,5 @@
 ---
-- name: Ensure source lxc folder exists
+- name: Ensure source LXC folder exists
   ansible.builtin.file:
     path: ~/lxc_configs
     state: directory
@@ -7,15 +7,15 @@
     owner: root
     group: root
 
-- name: Get old lxc config
+- name: Get old LXC config
   ansible.builtin.stat:
     path: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
   register: old_lxc_config
 
-- name: Create temp copy of lxc config
+- name: Create temp copy of LXC config
   ansible.builtin.copy:
     src: /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
-    dest: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    dest: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     remote_src: true
     owner: root
     group: root
@@ -24,26 +24,26 @@
 
 - name: Remove old configurations
   ansible.builtin.replace:
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    path: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     regexp: "{{ item }}"
     replace: ""
-  with_items:
+  loop:
     - "^mp[0-9]+:.*"
     - "^lxc.idmap:.*"
   changed_when: false
 
-- name: Add mounts to lxc config
+- name: Add mounts to LXC config
   ansible.builtin.blockinfile:
     block: |
       {% for mount in lxc_mount_mounts %}
-      mp{{ loop.index - 1 }}: {{ mount.src }},mp={{ mount.dest }}
+      mp{{ loop.index0 }}: {{ mount.src }},mp={{ mount.dest }}
       {% endfor %}
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    path: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK mounts"
     insertafter: "^memory"
   changed_when: false
 
-- name: Add idmap to lxc config
+- name: Add idmap to LXC config
   ansible.builtin.blockinfile:
     block: |
       lxc.idmap: u 0 100000 {{ lxc_mount_user_uid }}
@@ -52,7 +52,7 @@
       lxc.idmap: g 0 100000 {{ lxc_mount_user_gid }}
       lxc.idmap: g {{ lxc_mount_user_gid }} {{ lxc_mount_user_gid }} 1
       lxc.idmap: g {{ lxc_mount_user_gid + 1 }} {{ lxc_mount_user_gid + 100001 }} {{ 165536 - lxc_mount_user_gid - 100001 }}
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    path: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK idmap"
     insertafter: "^unprivileged: 1"
   changed_when: false
@@ -60,20 +60,21 @@
 
 - name: Remove new lines and comments
   ansible.builtin.replace:
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    path: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
     regexp: "{{ item }}"
     replace: ""
-  with_items:
+  loop:
     - "^#.*\n"
     - "^\n"
   changed_when: false
 
-- name: Get new lxc config
+- name: Get new LXC config
   ansible.builtin.stat:
-    path: /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf
+    path: ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf
   register: new_lxc_config
 
-- name: Copy config
-  ansible.builtin.command: cp /root/lxc_configs/{{ lxc_mount_lxc_id }}.conf /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
+- name: Copy config to LXC directory
+  ansible.builtin.command: cp ~/lxc_configs/{{ lxc_mount_lxc_id }}.conf /etc/pve/lxc/{{ lxc_mount_lxc_id }}.conf
   changed_when: true
   when: old_lxc_config.stat.checksum != new_lxc_config.stat.checksum
+  notify: Restart LXC

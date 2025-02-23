@@ -1,9 +1,9 @@
 ---
-- name: Ensure mounted folder exists
+- name: Ensure mounted folders exist
   ansible.builtin.file:
     path: "{{ item.dest }}"
     state: directory
     mode: "{{ lxc_mount_permissions }}"
     owner: "{{ lxc_mount_user_name }}"
     group: "{{ lxc_mount_user_group }}"
-  with_items: "{{ lxc_mount_mounts }}"
+  loop: "{{ lxc_mount_mounts }}"
