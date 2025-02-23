@@ -24,25 +24,31 @@ Example Playbook
 ----------------
 
 ```yaml
-    - hosts: host
-      vars:
-        lxc_mount_mounts:
-          - { src: /media/file-share, dest: /share/file-share }
-          - { src: /rpool-main/media-share, dest: /share/media-share }
-        lxc_mount_users: [backup]
+- hosts: host
+  vars:
+    lxc_mount_mounts:
+      - { src: /media/file-share, dest: /share/file-share }
+      - { src: /rpool-main/media-share, dest: /share/media-share }
+    lxc_mount_users: [backup]
 
-      roles:
-         - { role: tychobrouwer.lxc_mount, lxc_mount_is_lxc: false, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
+  roles:
+    - role: tychobrouwer.lxc_mount
+      lxc_mount_is_lxc: false
+      lxc_mount_mounts: "{{ lxc_mounts }}"
+      lxc_mount_lxc_id: 104
 
-    - hosts: lxc
-      vars:
-        lxc_mount_mounts:
-          - { src: /media/file-share, dest: /share/file-share }
-          - { src: /rpool-main/media-share, dest: /share/media-share }
-        lxc_mount_users: [sambauser]
+- hosts: lxc
+  vars:
+    lxc_mount_mounts:
+      - { src: /media/file-share, dest: /share/file-share }
+      - { src: /rpool-main/media-share, dest: /share/media-share }
+    lxc_mount_users: [sambauser]
 
-      roles:
-         - { role: tychobrouwer.lxc_mount, lxc_mount_is_lxc: true, lxc_mount_mounts: "{{ lxc_mounts }}", lxc_mount_lxc_id: 104 }
+  roles:
+    - role: tychobrouwer.lxc_mount
+      lxc_mount_is_lxc: true
+      lxc_mount_mounts: "{{ lxc_mounts }}"
+      lxc_mount_lxc_id: 104
 ```
 
 License
